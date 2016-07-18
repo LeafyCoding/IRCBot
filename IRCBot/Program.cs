@@ -7,6 +7,8 @@
 // -----------------------------------------------------------
 
 using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 
 using ChatSharp;
@@ -54,9 +56,21 @@ namespace IRCBot
 
             client.ChannelMessageRecieved += (s, e) =>
             {
-                if(e.PrivateMessage.Message.StartsWith("!cc "))
+                if(e.PrivateMessage.Message.ToLower().StartsWith("!cc "))
                 {
                     Currency.Convert(e);
+                }
+                if(e.PrivateMessage.Message.ToLower().StartsWith("!convert "))
+                {
+                    UnitConverter.Convert(e);
+                }
+                if(e.PrivateMessage.Message.ToLower().Equals("!spotify") && e.PrivateMessage.User.Nick.Equals("editio"))
+                {
+                    var proc = Process.GetProcessesByName("Spotify");
+
+                    foreach(var p in proc.Where(p => p.MainWindowTitle != string.Empty)) {
+                        client.SendMessage($"{IRC.BOLD}[🎵]:{IRC.BOLD}{IRC.CYAN} Now playing: {p.MainWindowTitle}", e.PrivateMessage.Source);
+                    }
                 }
             };
 
